@@ -50,9 +50,10 @@ public class WebDriverManager {
         }
     }
 
-    public void closeDriver(){
+    public static void closeDriver(){
         if (driver != null) {
             driver.quit();
+            driver = null;
         }
     }
 }

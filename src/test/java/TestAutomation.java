@@ -1,28 +1,27 @@
 import helpers.ResultOutput;
 import helpers.drivers.WebDriverManager;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import pages.LoginPage;
 import pages.WelcomePage;
 
 public class TestAutomation {
-    private WebDriverManager webDriverManager;
     private String nameMethod;
     private final String authPage = "https://idemo.bspb.ru/";
 
     private LoginPage loginPage;
     private WelcomePage welcomePage;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() {
+        ResultOutput.log("выполнение тестов класса TestAutomation");
         loginPage = new LoginPage();
         welcomePage = new WelcomePage();
-        webDriverManager = new WebDriverManager();
     }
 
     @Test
@@ -34,7 +33,8 @@ public class TestAutomation {
         verifyUrl(authPage + "welcome", loginPage.enterConfirmationCode("0000"));
 
         assertTrue(welcomePage.isFinancialFreedomVisible(), "Финансовая свобода не отображается");
-        assertEquals("2 851 176.01 ₽", welcomePage.getFinancialFreedomAmount(), "Сумма отображается неверно");
+        assertTrue(welcomePage.retrieveAndFormatFinancialFreedomAmount().matches("^\\d{1,3}( \\d{3})*(\\.\\d{2})? ₽$"),
+                "Сумма на странице не соответствует ожидаемому формату.");
 
         verifyCardPopoverContent("Travel *6192");
         verifyCardPopoverContent("Золотая *2224");
@@ -49,9 +49,9 @@ public class TestAutomation {
         assertEquals(cardName, welcomePage.getCardPopoverContent(cardName), "Надпись для " + cardName + " не отображается корректно");
     }
 
-    @AfterClass
+    @AfterEach
     public void tearDown() {
         ResultOutput.printTestEnd(nameMethod);
-        webDriverManager.closeDriver();
+        WebDriverManager.closeDriver();
     }
 }

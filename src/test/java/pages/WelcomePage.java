@@ -25,13 +25,17 @@ public class WelcomePage extends WebDriverManager {
     }
 
     /**
-     * Получает сумму, доступную в блоке "Финансовая свобода", в формате строки.
+     * Извлекает текст суммы из элемента веб-страницы "Финансовая свобода"
+     * и форматирует его, добавляя символ валюты.
      *
-     * @return строка, представляющая сумму в формате "число ₽".
+     * @return Строка, представляющая сумму в формате "X XXX XXX.XX ₽",
+     *         где X — цифры, а пробелы разделяют тысячи.
      */
-    public String getFinancialFreedomAmount() {
+    public String retrieveAndFormatFinancialFreedomAmount() {
         ResultOutput.log("Получаем текст суммы из элемента и форматируем его");
-        return formatAmount(waitForElementAndFind(financialFreedomAmount).getText());
+        WebElement amountElement = driver.findElement(By.cssSelector("#accounts-can-spend .can-spend-amount .value"));
+        String amountText = amountElement.getText().replace("\u00A0", " ");
+        return amountText + " ₽";
     }
 
     /**
